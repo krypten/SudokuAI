@@ -1,5 +1,6 @@
 from game.sudoku import Sudoku
 from game.sudoku_agent import SudokuAgent
+from game.sudoku_game import SudokuGame
 from utils import *
 
 if __name__ == "__main__":
@@ -10,3 +11,4 @@ if __name__ == "__main__":
     debug_display(sudoku)
 
     SudokuAgent(sudoku).solve()
+    SudokuGame(sudoku.deepcopy()).play()
