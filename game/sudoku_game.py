@@ -4,8 +4,10 @@ from utils import *
 
 
 class SudokuGame:
-    def __init__(self, sudoku):
+    def __init__(self, sudoku, solved_sudoku):
+        self.m_initial_sudoku = sudoku.deepcopy()
         self.m_sudoku = sudoku
+        self.m_solved_sudoku = solved_sudoku
 
         # Set up couple of class constants, used for rendering
         # Sets size of grid
@@ -44,12 +46,17 @@ class SudokuGame:
             if event.type == QUIT:
                 pygame.display.quit()
                 return
+            elif event.type == MOUSEBUTTONUP and event.button == 3:
+                mouse_x, mouse_y = event.pos
+                print mouse_x
+                print mouse_y
+                self.__hint_or_remove_cell(mouse_x, mouse_y)
             elif event.type == MOUSEBUTTONUP:
                 mouse_x, mouse_y = event.pos
                 print mouse_x
                 print mouse_y
                 self.__select_cell(mouse_x, mouse_y)
-                pygame.display.update()
+            pygame.display.update()
             self.FPS_CLOCK.tick(self.FPS)
 
     def __update_board(self):
@@ -108,3 +115,11 @@ class SudokuGame:
             item = number_x + number_y * 3 + 1
             self.m_sudoku.update_value(cell_x, cell_y, item)
             self.__update_board()
+
+    def __hint_or_remove_cell(self, x, y):
+        cell_x, cell_y = x // self.CELL_SIZE, y // self.CELL_SIZE
+        if len(str(self.m_sudoku.get_values()[cell_x][cell_y])) == 1 and len(str(self.m_initial_sudoku.get_values()[cell_x][cell_y])) != 1:
+            self.m_sudoku.update_value(cell_x, cell_y, '123456789')
+        else:
+            self.m_sudoku.update_value(cell_x, cell_y, self.m_solved_sudoku.get_values()[cell_x][cell_y])
+        self.__update_board()

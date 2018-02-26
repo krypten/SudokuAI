@@ -10,5 +10,5 @@ if __name__ == "__main__":
     sudoku = Sudoku(sudoku_grid)
     debug_display(sudoku)
 
-    SudokuAgent(sudoku).solve()
-    SudokuGame(sudoku.deepcopy()).play()
+    solved_sudoku = SudokuAgent(sudoku.deepcopy()).solve()
+    SudokuGame(sudoku.deepcopy(), solved_sudoku.deepcopy()).play()

@@ -14,7 +14,7 @@ class SudokuAgent:
 
     def solve(self):
         self.m_possible_result = self.__search(self.m_sudoku)
-        debug_display(self.m_possible_result)
+        return self.m_possible_result
 
     def __search(self, sudoku):
         """
