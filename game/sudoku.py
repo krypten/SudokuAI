@@ -36,19 +36,19 @@ class Sudoku:
         # update row
         for idx in range(len(self.m_values[0])):
             if idx != y:
-                self.__remove_possible_value(x, idx, value)
+                self.remove_possible_value(x, idx, value)
         # update col
         for idx in range(len(self.m_values)):
             if idx != x:
-                self.__remove_possible_value(idx, y, value)
+                self.remove_possible_value(idx, y, value)
         # update box
         box_x, box_y = (x // 3) * 3, (y // 3) * 3
         for idx_x in range(3):
             for idx_y in range(3):
                 if box_x + idx_x != x and box_y + idx_y != y:
-                    self.__remove_possible_value(box_x + idx_x, box_y + idx_y, value)
+                    self.remove_possible_value(box_x + idx_x, box_y + idx_y, value)
 
-    def __remove_possible_value(self, x, y, value):
+    def remove_possible_value(self, x, y, value):
         self.m_values[x][y] = str(self.m_values[x][y]).replace(value, "")
 
     def deepcopy(self):

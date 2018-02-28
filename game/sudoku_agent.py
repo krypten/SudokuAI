@@ -1,4 +1,4 @@
-import collections
+from collections import Counter
 from utils import *
 
 
@@ -63,7 +63,8 @@ class SudokuAgent:
         while is_state_simplified is not 0:
             solved_values_before = self.__solved_values(sudoku)
             self.__eliminate(sudoku)
-            values = self.__only_choice(sudoku)
+            self.__only_choice(sudoku)
+            self.__naked_twins(sudoku)
             solved_values_after = self.__solved_values(sudoku)
             is_state_simplified = cmp(solved_values_before, solved_values_after)
             # If reached invalid state
@@ -122,7 +123,7 @@ class SudokuAgent:
                 possible_values = sudoku.get_possible_values(x, y)
                 if len(possible_values) != 1:
                     options += possible_values
-            ctr = collections.Counter(options)
+            ctr = Counter(options)
             for key in ctr:
                 if ctr[key] == 1:
                     for y in range(len(values[0])):
@@ -137,7 +138,7 @@ class SudokuAgent:
                 possible_values = sudoku.get_possible_values(x, y)
                 if len(possible_values) != 1:
                     options += possible_values
-            ctr = collections.Counter(options)
+            ctr = Counter(options)
             for key in ctr:
                 if ctr[key] == 1:
                     for x in range(len(values)):
@@ -146,14 +147,14 @@ class SudokuAgent:
                             break
         # box
         for box in range(9):
-            x, y = (box % 3) * 3, (box // 3) * 3
+            x, y = (box // 3) * 3, (box % 3) * 3
             options = []
             for idx_x in range(3):
                 for idx_y in range(3):
                     possible_values = sudoku.get_possible_values(x + idx_x, y + idx_y)
                     if len(possible_values) != 1:
                         options += possible_values
-            ctr = collections.Counter(options)
+            ctr = Counter(options)
             for key in ctr:
                 if ctr[key] == 1:
                     for idx_x in range(3):
@@ -162,3 +163,35 @@ class SudokuAgent:
                                 sudoku.update_value(x + idx_x, y + idx_y, key)
                                 break
         return sudoku
+
+    def __naked_twins(self, sudoku):
+        values = sudoku.get_values()
+        # row
+        for x in range(len(values)):
+            potential_twins = [item for item in values[x] if len(item) == 2]
+            for key, value in Counter(potential_twins).items():
+                if value == 2:
+                    for y in range(len(values[x])):
+                        if values[x][y] != key:
+                            sudoku.remove_possible_value(x, y, key[0])
+                            sudoku.remove_possible_value(x, y, key[1])
+        # col
+        for y in range(len(values[0])):
+            potential_twins = [values[x][y] for x in range(len(values)) if len(values[x][y]) == 2]
+            for key, value in Counter(potential_twins).items():
+                if value == 2:
+                    for x in range(len(values)):
+                        if values[x][y] != key:
+                            sudoku.remove_possible_value(x, y, key[0])
+                            sudoku.remove_possible_value(x, y, key[1])
+        # box
+        for box in range(9):
+            x, y = (box // 3) * 3, (box % 3) * 3
+            potential_twins = [values[x + idx_x][y + idx_y] for idx_x in range(3) for idx_y in range(3) if len(values[x + idx_x][y + idx_y]) == 2]
+            for key, value in Counter(potential_twins).items():
+                if value == 2:
+                    for idx_x in range(3):
+                        for idx_y in range(3):
+                            if values[x + idx_x][y + idx_y] != key:
+                                sudoku.remove_possible_value(x + idx_x, y + idx_y, key[0])
+                                sudoku.remove_possible_value(x + idx_x, y + idx_y, key[1])
